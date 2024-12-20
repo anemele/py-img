@@ -26,7 +26,12 @@ def main():
     elif not output.endswith(".png"):
         output = f"{output}.png"
 
-    new("RGBA", (width, height), color).save(output)
+    try:
+        img = new("RGBA", (width, height), color)
+        img.save(output)
+        print(f"Saved to {output}")
+    except Exception as e:
+        print(f"Failed to generate image: {e}")
 
 
 if __name__ == "__main__":
