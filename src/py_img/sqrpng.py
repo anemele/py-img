@@ -1,7 +1,6 @@
 """将图片转为正方形、边缘带透明像素的 PNG 格式。"""
 
 import os.path as osp
-from pathlib import Path
 from typing import Optional
 
 from PIL import UnidentifiedImageError
@@ -9,12 +8,14 @@ from PIL.Image import Image
 from PIL.Image import new as imnew
 from PIL.Image import open as imopen
 
+from ._typing import StrOrBytesPath
+
 from .utils import auto_rename
 
 SUFFIX = ".png"
 
 
-def convert(file: Path | str, max_pixel: Optional[int] = None) -> Optional[Image]:
+def convert(file: StrOrBytesPath, max_pixel: Optional[int] = None) -> Optional[Image]:
     try:
         input_image = imopen(file)
     except UnidentifiedImageError as e:

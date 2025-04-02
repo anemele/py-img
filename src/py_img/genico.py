@@ -5,15 +5,15 @@ import glob
 import os.path as osp
 from functools import partial
 from itertools import chain
-from pathlib import Path
 from typing import Optional
 
 from .sqrpng import convert as square_image
+from ._typing import StrOrBytesPath
 
 MAX_SIZE = 256
 
 
-def genico(path: Path | str, size: int) -> Optional[Path | str]:
+def genico(path: StrOrBytesPath, size: int) -> Optional[str]:
     sqr_img = square_image(path, MAX_SIZE)
     if sqr_img is None:
         return None
