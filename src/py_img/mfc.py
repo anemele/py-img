@@ -13,9 +13,8 @@ e.g.
     \x1b[32m{icon_name}\x1b[m
 """
 
-import argparse
-import os
 from pathlib import Path
+from typing import Sequence
 
 import win32api
 import win32con
@@ -82,15 +81,17 @@ def make_cover(film_path: Path):
 
 
 def main():
+    import argparse
+    import os
+
     parser = argparse.ArgumentParser(
-        prog="mfc",
         description=__doc__.format(cover=COVER_NAME, icon_name=ICON_NAME),  # type: ignore
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument("path", type=Path, nargs="+", help="Film path")
     os.system("")  # enable ANSI escape code
     args = parser.parse_args()
-    arg_path: list[Path] = args.path
+    arg_path: Sequence[Path] = args.path
 
     for path in arg_path:
         if not path.is_dir():

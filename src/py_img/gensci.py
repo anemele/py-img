@@ -1,6 +1,5 @@
 """生成纯色透明图。"""
 
-import argparse
 from typing import Optional
 
 from PIL.Image import new
@@ -9,7 +8,9 @@ DEFAULT_SIZE = 256
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="gensci", description=__doc__)
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("color", type=str, nargs="?", default="#ffff", help="")
     parser.add_argument("-W", "--width", type=int, default=DEFAULT_SIZE)
     parser.add_argument("-H", "--height", type=int, default=DEFAULT_SIZE)

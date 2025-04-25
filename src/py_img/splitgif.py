@@ -1,3 +1,5 @@
+"""将一个 GIF 文件分离为独立的帧，并保存为 PNG 文件。"""
+
 import argparse
 import os
 import os.path as op
@@ -7,10 +9,7 @@ from PIL import Image
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        prog=op.basename(__file__).removesuffix(".py"),
-        description="Split a GIF into individual frames.",
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("path", help="Path to the GIF file.")
     parser.add_argument(
         "-o", "--out-dir", help="Output directory for the individual frames."

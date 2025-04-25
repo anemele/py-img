@@ -1,21 +1,19 @@
 """将图片转为正方形、边缘带透明像素的 PNG 格式。"""
 
-import os.path as osp
-from typing import Optional
+from typing import Optional, Sequence
 
 from PIL import UnidentifiedImageError
 from PIL.Image import Image
 from PIL.Image import new as imnew
 from PIL.Image import open as imopen
 
-from ._typing import StrOrBytesPath
-
+from ._typing import StrPath
 from .utils import auto_rename
 
 SUFFIX = ".png"
 
 
-def convert(file: StrOrBytesPath, max_pixel: Optional[int] = None) -> Optional[Image]:
+def convert(file: StrPath, max_pixel: Optional[int] = None) -> Optional[Image]:
     try:
         input_image = imopen(file)
     except UnidentifiedImageError as e:
@@ -47,19 +45,15 @@ def main():
     import os.path
     from itertools import chain
 
-    parser = argparse.ArgumentParser(
-        prog=osp.basename(__file__).removesuffix(".py"),
-        description=__doc__,
-        formatter_class=argparse.RawTextHelpFormatter,
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("file", nargs="+")
     parser.add_argument("-m", "--max-pixel", type=int)
 
     args = parser.parse_args()
-    arg_file: list[str] = args.file
+    arg_file: Sequence[str] = args.file
     arg_max: Optional[int] = args.max_pixel
 
-    files = filter(os.path.isfile, chain(*map(glob.iglob, arg_file)))
+    files = filter(os.path.isfile, chain.from_iterable(map(glob.iglob, arg_file)))
     for file in files:
         img = convert(file, arg_max)
         if img is None:

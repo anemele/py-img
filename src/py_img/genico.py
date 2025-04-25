@@ -5,15 +5,15 @@ import glob
 import os.path as osp
 from functools import partial
 from itertools import chain
-from typing import Optional
+from typing import Optional, Sequence
 
+from ._typing import StrPath
 from .sqrpng import convert as square_image
-from ._typing import StrOrBytesPath
 
 MAX_SIZE = 256
 
 
-def genico(path: StrOrBytesPath, size: int) -> Optional[str]:
+def genico(path: StrPath, size: int) -> Optional[str]:
     sqr_img = square_image(path, MAX_SIZE)
     if sqr_img is None:
         return None
@@ -27,11 +27,7 @@ def genico(path: StrOrBytesPath, size: int) -> Optional[str]:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        prog=osp.basename(__file__).removesuffix(".py"),
-        description=__doc__,
-        formatter_class=argparse.RawTextHelpFormatter,
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "file", nargs="+", type=str, help="Image file, wildcard supported."
     )
@@ -41,7 +37,7 @@ def main():
 
     args = parser.parse_args()
     # print(args)
-    args_file: list[str] = args.file
+    args_file: Sequence[str] = args.file
     args_size: int = args.size
 
     _genico = partial(genico, size=args_size)
