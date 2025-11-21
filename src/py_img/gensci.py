@@ -33,7 +33,3 @@ def main():
         print(f"Saved to {output}")
     except Exception as e:
         print(f"Failed to generate image: {e}")
-
-
-if __name__ == "__main__":
-    main()

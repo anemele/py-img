@@ -41,7 +41,3 @@ def main():
         pass
 
     print(f"Frames saved to {out_dir}.")
-
-
-if __name__ == "__main__":
-    main()

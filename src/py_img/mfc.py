@@ -19,8 +19,9 @@ from typing import Sequence
 import win32api
 import win32con
 from PIL import UnidentifiedImageError
+from PIL.Image import open as imopen
 
-from .sqrpng import convert as square_image
+from .sqrpng import sqr_png
 
 COVER_NAME = "cover"
 ICON_NAME = "icon.ico"
@@ -33,7 +34,7 @@ def make_icon(film_path: Path) -> bool:
     # 此处尝试每一个匹配，如果成功则结束，否则认为不存在，抛出 StopIteration
     for img_path in match:
         try:
-            sqr_img = square_image(img_path, ICON_SIZE)
+            img = imopen(img_path)
             break
         except UnidentifiedImageError:
             continue
@@ -41,11 +42,8 @@ def make_icon(film_path: Path) -> bool:
         print(f"no {COVER_NAME}.* file found in {film_path}")
         return False
 
-    if sqr_img is None:
-        print("failed to create squared image")
-        return False
-
     ico_path = film_path / ICON_NAME
+    sqr_img = sqr_png(img, ICON_SIZE)
     sqr_img.save(ico_path, sizes=ICON_SIZE_TUPLE)
     # 设置隐藏属性
     win32api.SetFileAttributes(str(ico_path), win32con.FILE_ATTRIBUTE_HIDDEN)
@@ -101,7 +99,3 @@ def main():
             make_cover(path)
         except Exception as e:
             print(f"failed to make cover for {path}: {e}")
-
-
-if __name__ == "__main__":
-    main()

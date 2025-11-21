@@ -7,43 +7,31 @@ from PIL.Image import Image
 from PIL.Image import new as imnew
 from PIL.Image import open as imopen
 
-from ._typing import StrPath
-from .utils import auto_rename
-
-SUFFIX = ".png"
+from ._common import auto_rename, glob_paths
 
 
-def convert(file: StrPath, max_pixel: Optional[int] = None) -> Optional[Image]:
-    try:
-        input_image = imopen(file)
-    except UnidentifiedImageError as e:
-        print(e)
-        return None
-
-    w, h = input_image.size
+def sqr_png(image: Image, max_pixel: Optional[int] = None) -> Image:
+    w, h = image.size
     input_max_pixel = max(w, h)
 
     if max_pixel is None:
         max_pixel = input_max_pixel
     elif (rate := max_pixel / input_max_pixel) < 1:
         w, h = round(w * rate), round(h * rate)
-        input_image = input_image.resize((w, h))  # type: ignore
+        image = image.resize((w, h))
 
     m = max_pixel
     offset_w = (m - w) >> 1
     offset_h = (m - h) >> 1
 
     new_image = imnew("RGBA", (m, m))
-    new_image.paste(input_image, (offset_w, offset_h))
+    new_image.paste(image, (offset_w, offset_h))
 
     return new_image
 
 
 def main():
     import argparse
-    import glob
-    import os.path
-    from itertools import chain
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("file", nargs="+")
@@ -53,15 +41,13 @@ def main():
     arg_file: Sequence[str] = args.file
     arg_max: Optional[int] = args.max_pixel
 
-    files = filter(os.path.isfile, chain.from_iterable(map(glob.iglob, arg_file)))
-    for file in files:
-        img = convert(file, arg_max)
-        if img is None:
-            print(f"failed: {file}")
-        else:
-            path = auto_rename(file, suffix=SUFFIX)
-            img.save(path)
+    for file in glob_paths(arg_file):
+        try:
+            img = imopen(file)
+        except UnidentifiedImageError as e:
+            print(e)
+            continue
 
-
-if __name__ == "__main__":
-    main()
+        img = sqr_png(img, arg_max)
+        path = auto_rename(file, suffix=".png")
+        img.save(path)

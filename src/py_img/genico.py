@@ -1,26 +1,30 @@
 """输入图片，输出 ico 文件。"""
 
 import argparse
-import glob
 import os.path as osp
-from functools import partial
-from itertools import chain
 from typing import Optional, Sequence
 
-from ._typing import StrPath
-from .sqrpng import convert as square_image
+from PIL import UnidentifiedImageError
+from PIL.Image import open as imopen
+
+from ._common import glob_paths
+from .sqrpng import sqr_png
 
 MAX_SIZE = 256
 
 
-def genico(path: StrPath, size: int) -> Optional[str]:
-    sqr_img = square_image(path, MAX_SIZE)
-    if sqr_img is None:
-        return None
+def genico(path: str, size: int) -> Optional[str]:
+    try:
+        img = imopen(path)
+    except UnidentifiedImageError as e:
+        print(e)
+        return
 
     name, _ = osp.splitext(path)
     ico_name = f"{name}.ico"
     size = min(size, MAX_SIZE)
+
+    sqr_img = sqr_png(img, MAX_SIZE)
     sqr_img.save(ico_name, sizes=[(size, size)])
 
     return ico_name
@@ -36,16 +40,8 @@ def main():
     )
 
     args = parser.parse_args()
-    # print(args)
     args_file: Sequence[str] = args.file
-    args_size: int = args.size
+    size: int = args.size
 
-    _genico = partial(genico, size=args_size)
-
-    files = filter(osp.isfile, chain.from_iterable(map(glob.iglob, args_file)))
-    for file in files:
-        print(f"done: {file} --> {_genico(file)}")
-
-
-if __name__ == "__main__":
-    main()
+    for file in glob_paths(args_file):
+        print(f"done: {file} --> {genico(file, size)}")
